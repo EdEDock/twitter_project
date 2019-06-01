@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Flask Tweepy Tutorial</title>
+	<title>Twitter Project</title>
 	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
 </head>
 <body>
@@ -14,7 +14,10 @@
 	 <button class="btn btn-primary" type="submit">search</button>
        </form>
      </div>
-      {{ word_counts }}
+       {% for word in word_counts %}
+      <div>Word:{{ word[0] }} Count:{{ word[1] }}</div>
+       {% endfor %}
+
 	  {% for tweet in tweets %}
 	  <div class="card mt-2">
 	    <div class="card-body">
