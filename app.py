@@ -2,6 +2,7 @@ import twitter_credentials
 import tweepy
 import itertools
 import collections
+from flask import Flask, render_template
 
 '''
 put your twitter api credentials in local file twitter_credentials.py in the format
@@ -11,6 +12,7 @@ ACCESS_TOKEN = ''
 ACCESS_TOKEN_SECRET = ''
 '''
 
+app = Flask(__name__)
 
 def get_tweets(apitwitter, search_text, num_tweets):
 
@@ -32,8 +34,9 @@ def get_word_counts(tweetstext):
     # Return top 10 tweet words
     return word_counts.most_common(10)
 
+@app.route('/')
+def index():
 
-def main():
     # Establish connection to 3rd Party Twitter Api
     auth = tweepy.OAuthHandler(twitter_credentials.API_KEY, twitter_credentials.API_SECRET_KEY)
     auth.set_access_token(twitter_credentials.ACCESS_TOKEN, twitter_credentials.ACCESS_TOKEN_SECRET)
@@ -56,7 +59,9 @@ def main():
     for word, count in word_counts:
         print("Word: {} Count:{}".format(word, count))
 
+    # Pass Tweet Text and Word Counts to Front End Display
+    return render_template('home.html', tweets=filtered_tweets, word_counts=word_counts)
 
 if __name__ == '__main__':
 
-    main()
+    app.run(debug=True)
