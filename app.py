@@ -1,5 +1,7 @@
 import twitter_credentials
 import tweepy
+import itertools
+import collections
 
 '''
 put your twitter api credentials in local file twitter_credentials.py in the format
@@ -17,8 +19,21 @@ def get_tweets(apitwitter, search_text, num_tweets):
     return tweets_text
 
 
-if __name__ == '__main__':
+def get_word_counts(tweetstext):
+    # Make all tweets one case for easy grouping and split each tweet into seperate words
+    tweet_words = [tweet.lower().split() for tweet in tweetstext]
 
+    # List of all words used as strings with duplicates for counting
+    words = list(itertools.chain(*tweet_words))
+
+    # Get counts all all tweet words
+    word_counts = collections.Counter(words)
+
+    # Return top 10 tweet words
+    return word_counts.most_common(10)
+
+
+def main():
     # Establish connection to 3rd Party Twitter Api
     auth = tweepy.OAuthHandler(twitter_credentials.API_KEY, twitter_credentials.API_SECRET_KEY)
     auth.set_access_token(twitter_credentials.ACCESS_TOKEN, twitter_credentials.ACCESS_TOKEN_SECRET)
@@ -32,4 +47,16 @@ if __name__ == '__main__':
 
     # Print Returned Tweets
     for index, tweet in enumerate(filtered_tweets):
-        print("Tweet Number: {} Tweet Text:{} ".format(index+1, tweet))
+        print("Tweet Number: {} Tweet Text:{} ".format(index + 1, tweet))
+
+    # Get word counts from returned tweets
+    word_counts = get_word_counts(filtered_tweets)
+
+    # Print Returned Word Counts
+    for word, count in word_counts:
+        print("Word: {} Count:{}".format(word, count))
+
+
+if __name__ == '__main__':
+
+    main()
