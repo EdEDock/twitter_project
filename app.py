@@ -2,7 +2,7 @@ import twitter_credentials
 import tweepy
 import itertools
 import collections
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 '''
 put your twitter api credentials in local file twitter_credentials.py in the format
@@ -46,6 +46,15 @@ def index():
     # Use 20 for Max Tweets to not exhaust rate limits. Change to 1000 as required in the specs before deployment
     max_tweets = 20
 
+    # Get Search Term From Front End Template
+    search_term = request.args.get('q')
+
+    # Check if blank, if so give a default of 'investing'
+    if search_term is None:
+        search_term = "investing"
+
+    # Ignore Retweets
+    search_term += " -filter:retweets"
     filtered_tweets = get_tweets(api, search_term, max_tweets)
 
     # Print Returned Tweets
