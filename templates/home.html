@@ -14,15 +14,15 @@
   </head>
   <body>
 
-  <div class="container">
+  <div class="container pb-4">
       <div class="jumbotron">
         <h1 class="text-center">Twitter Project</h1>
-        <p class="text-center">Enter a word below to search up to 1000 tweets</p>
+        <p class="text-center">Enter text below to search up to 1000 tweets</p>
       </div>
 
       <div class="row justify-content-center">
           <form class="form-inline" method="GET" action="{{ url_for('index') }}">
-              <label class="pr-2" for="searchword">Search Word:</label>
+              <label class="pr-2" for="searchword">Search Term:</label>
               <input class="form-control" id="searchword" type="text" name="q">
               <button class="btn btn-primary" type="submit">search</button>
           </form>
