@@ -56,15 +56,24 @@ def index():
     search_term = request.args.get('q')
 
     # Check if blank, if so give a default of 'investing'
+    word_counts = ""
+
     if search_term is None:
-        search_term = "investing"
 
-    # Ignore Retweets
-    search_term += " -filter:retweets"
-    filtered_tweets = get_tweets(api, search_term, max_tweets)
+        filtered_tweets = []
 
-    # Get word counts from returned tweets
-    word_counts = get_word_counts(filtered_tweets)
+    elif search_term == "":
+
+        filtered_tweets = ["No Search Term Eneterd"]
+
+    else:
+
+        # Ignore Retweets
+        search_term += " -filter:retweets"
+        filtered_tweets = get_tweets(api, search_term, max_tweets)
+
+        # Get word counts from returned tweets
+        word_counts = get_word_counts(filtered_tweets)
 
     # Pass Tweet Text and Word Counts to Front End Display
     return render_template('home.html', tweets=filtered_tweets, word_counts=word_counts)

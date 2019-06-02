@@ -14,8 +14,9 @@
   </head>
   <body>
 
-  <div class="container pb-4">
-      <div class="jumbotron">
+    <div class="container pb-4 ">
+
+      <div class="jumbotron border rounded">
         <h1 class="text-center">Twitter Project</h1>
         <p class="text-center">Enter text below to search up to 1000 tweets</p>
       </div>
@@ -28,43 +29,49 @@
           </form>
       </div>
 
-      <div class="container">
-          <h4 class="text-center py-4">Top 10 Appearing Words For Search</h4>
-          <table class="table text-center">
-            <thead>
-                <tr>
-                    <th>Word</th>
-                    <th>Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for word in word_counts %}
-                <tr>
-                    <td>{{ word[0] }}</td>
-                    <td>{{ word[1] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-      </div>
+        {% if tweets|length %}
 
-      <div class="container">
-          <h4 class="text-center py-4">Tweets</h4>
-          <table id="tweetTable" class="table table-borderless text-center">
-           <thead>
-                <tr>
-                    <th>Tweet Text</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tweet in tweets %}
-                <tr>
-                    <td>{{ tweet }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-          </table>
-      </div>
+          <div class="container">
+
+              <h4 class="text-center py-4">Top 10 Appearing Words For Search</h4>
+              <table class="table text-center">
+                <thead>
+                    <tr>
+                        <th>Word</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for word in word_counts %}
+                    <tr>
+                        <td>{{ word[0] }}</td>
+                        <td>{{ word[1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+          </div>
+
+          <div class="container">
+              <h4 class="text-center py-4 bg-primary border">Tweets</h4>
+              <table id="tweetTable" class="table table-borderless text-center">
+               <thead>
+                    <tr>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tweet in tweets %}
+                    <tr>
+                        <td>{{ tweet }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+          </div>
+
+         {% endif %}
+
   </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
