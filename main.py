@@ -1,16 +1,21 @@
-import twitter_credentials
+import config
 import tweepy
 import itertools
 import collections
 from flask import Flask, render_template, request
 import re
+from google.cloud import datastore
+from datetime import datetime
+
 
 '''
-put your twitter api credentials in local file twitter_credentials.py in the format
-API_KEY = ''
-API_SECRET_KEY = ''
-ACCESS_TOKEN = ''
-ACCESS_TOKEN_SECRET = ''
+put your twitter api credentials in local file config.py in the format
+as well as Google Cloud Project name/id
+TWITTER_API_KEY = ''
+TWITTER_API_SECRET_KEY = ''
+TWITTER_ACCESS_TOKEN = ''
+TWITTER_ACCESS_TOKEN_SECRET = ''
+GOOGLE_PROJECT_ID = ''
 '''
 
 app = Flask(__name__)
@@ -40,14 +45,28 @@ def get_word_counts(tweetstext):
     # Return top 10 tweet words
     return word_counts.most_common(10)
 
+def log_search(datastore_client, search_term, timestamp, word_counts):
+
+    with datastore_client.transaction():
+        incomplete_key = datastore_client.key('Search')
+
+        task = datastore.Entity(key=incomplete_key)
+
+        task.update({'term': search_term, 'timestamp': timestamp, 'wordcounts':word_counts})
+
+        datastore_client.put(task)
+
 
 @app.route('/')
 def index():
 
     # Establish connection to 3rd Party Twitter Api
-    auth = tweepy.OAuthHandler(twitter_credentials.API_KEY, twitter_credentials.API_SECRET_KEY)
-    auth.set_access_token(twitter_credentials.ACCESS_TOKEN, twitter_credentials.ACCESS_TOKEN_SECRET)
+    auth = tweepy.OAuthHandler(config.TWITTER_API_KEY, config.TWITTER_API_SECRET_KEY)
+    auth.set_access_token(config.TWITTER_ACCESS_TOKEN, config.TWITTER_ACCESS_TOKEN_SECRET)
     api = tweepy.API(auth)
+
+    # Establish a connection to Google Datastore
+    datastore_client = datastore.Client(project=config.GOOGLE_PROJECT_ID)
 
     # Use 20 for Max Tweets to not exhaust rate limits. Change to 1000 as required in the specs before deployment
     max_tweets = 20
@@ -68,12 +87,18 @@ def index():
 
     else:
 
+        # Get current timestamp for logging query
+        timestamp = datetime.now()
+
         # Ignore Retweets
-        search_term += " -filter:retweets"
-        filtered_tweets = get_tweets(api, search_term, max_tweets)
+        search_filter = search_term + " -filter:retweets"
+        filtered_tweets = get_tweets(api, search_filter, max_tweets)
 
         # Get word counts from returned tweets
         word_counts = get_word_counts(filtered_tweets)
+
+        # Log Search to Google Datastore
+        log_search(datastore_client, search_term, timestamp, dict(word_counts))
 
     # Pass Tweet Text and Word Counts to Front End Display
     return render_template('home.html', tweets=filtered_tweets, word_counts=word_counts)
