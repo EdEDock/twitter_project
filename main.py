@@ -69,7 +69,7 @@ def index():
     datastore_client = datastore.Client(project=config.GOOGLE_PROJECT_ID)
 
     # Use 20 for Max Tweets to not exhaust rate limits. Change to 1000 as required in the specs before deployment
-    max_tweets = 20
+    max_tweets = 1000
 
     # Get Search Term From Front End Template
     search_term = request.args.get('q')
